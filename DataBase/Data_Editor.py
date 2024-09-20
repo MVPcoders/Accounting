@@ -101,8 +101,8 @@ class Products(DataBase):
 
 
 
-pro = Products('Data.db')
-
-
-
-pro.close_query()
+# pro = Products('Data.db')
+#
+#
+#
+# pro.close_query()
