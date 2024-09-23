@@ -85,7 +85,7 @@ if selected == 'مدیریت':
                 brand = st.text_input("برند")
                 buy_price = st.text_input("قیمت خرید")
                 sell_price = st.text_input("قیمت فروش")
-                unit = st.text_input("واحد", value=0)
+                unit = st.text_input("واحد")
                 inventory = st.number_input("موجودی", value=0)
                 # اضافه کردن کالا به دیتا بیس
                 if st.button("ثبت"):
@@ -96,39 +96,46 @@ if selected == 'مدیریت':
             if crud == 'ویرایش کالا':
                 pro = Products("Data.db")
                 st.title('تغییر در کالا')
-                product_id = st.text_input("شماره کالا", key="update_product_by_id")
-                product_name = st.text_input("نام کالا", key="update_product_by_name")
-                if product_id :
-                    try:
-                        product_by_id = pro.get_product_by_id(product_id)
+                edit_chose = st.radio("نوع جستجو",options=[
+                    'جستجو بر اساس نام',
+                    'جستجو بر اساس شماره کالا'
+                ])
+                if edit_chose == "جستجو بر اساس نام":
+                    product_name = st.text_input("نام کالا", key="update_product_by_name")
+                    if product_name:
+                        product_by_name = pro.get_product_by_name(product_name)
                         st.subheader('مشخصات کالای مورد نظر')
-                        product = st.text_input("نام کالا", value=product_by_id[1])
-                        brand = st.text_input("برند",value=product_by_id[2])
-                        buy_price = st.text_input("قیمت خرید",value=product_by_id[3])
-                        sell_price = st.text_input("قیمت فروش",value=product_by_id[4])
-                        unit = st.number_input("واحد", value=product_by_id[5])
-                        inventory = st.number_input("موجودی انبار", value=product_by_id[6])
-                    except:
-                        st.error('چنین محصولی نداریم')
-                        pro.close_query()
-                    if st.button("تغییر"):
+                        product = st.text_input("نام کالا", value=product_by_name[1])
+                        brand = st.text_input("برند", value=product_by_name[2])
+                        buy_price = st.text_input("قیمت خرید", value=product_by_name[3])
+                        sell_price = st.text_input("قیمت فروش", value=product_by_name[4])
+                        unit = st.text_input("واحد", value=product_by_name[5])
+                        inventory = st.number_input("موجودی انبار", value=product_by_name[6])
+                else:
+                    product_id = st.text_input("شماره کالا", key="update_product_by_id")
+                    if product_id :
                         try:
-                            pro.update_product(product_id,product, brand, buy_price, sell_price, unit, inventory)
-                            pro.close_query()
-                            st.success('با موفقیت تغییر پیدا کرد')
+                            product_by_id = pro.get_product_by_id(product_id)
+                            st.subheader('مشخصات کالای مورد نظر')
+                            product = st.text_input("نام کالا", value=product_by_id[1])
+                            brand = st.text_input("برند",value=product_by_id[2])
+                            buy_price = st.text_input("قیمت خرید",value=product_by_id[3])
+                            sell_price = st.text_input("قیمت فروش",value=product_by_id[4])
+                            unit = st.text_input("واحد", value=product_by_id[5])
+                            inventory = st.number_input("موجودی انبار", value=product_by_id[6])
                         except:
-                            st.error('نتونستم تغییرش بدم')
+                            st.error('چنین محصولی نداریم')
                             pro.close_query()
+                        if st.button("تغییر"):
+                            try:
+                                pro.update_product(product_id,product, brand, buy_price, sell_price, unit, inventory)
+                                pro.close_query()
+                                st.success('با موفقیت تغییر پیدا کرد')
+                            except:
+                                st.error('نتونستم تغییرش بدم')
+                                pro.close_query()
 
-                if product_name :
-                    product_by_name = pro.get_product_by_name(product_name)
-                    st.subheader('مشخصات کالای مورد نظر')
-                    product = st.text_input("نام کالا", value=product_by_name[1])
-                    brand = st.text_input("برند",value=product_by_name[2])
-                    buy_price = st.text_input("قیمت خرید",value=product_by_name[3])
-                    sell_price = st.text_input("قیمت فروش",value=product_by_name[4])
-                    unit = st.number_input("واحد", value=product_by_name[5])
-                    inventory = st.number_input("موجودی انبار", value=product_by_name[6])
+
 
             if crud == 'حذف کالا':
                 pro = Products("Data.db")
@@ -151,6 +158,17 @@ if selected == 'مدیریت':
                     except:
                         st.error('چنین محصولی نداریم')
                         pro.close_query()
+if selected == 'فاکتور':
+    st.title('فاکتور دهی')
+    df = pd.DataFrame(all, columns=[desc[0] for desc in pro.cursor.description])
+    st.table(df)
+    name = st.text_input("نام کالا")
+    if name:
+        pro = Products("Data.db")
+        product_info = pro.fuzzy_search(name)
+        st.write(product_info)
+
+
 
 
 # df = pd.DataFrame(all, columns=[desc[0] for desc in pro.cursor.description])

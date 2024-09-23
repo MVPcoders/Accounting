@@ -95,10 +95,21 @@ class Products(DataBase):
         query = "SELECT * FROM product_table WHERE product=?"
         product = self.fetch_one_query(query, (name,))
         return product
+    #
+    # def fuzzy_search(self,name):
+    #     query = f"SELECT * FROM product_table WHERE product LIKE '%{name}%'"
+    #     all_products = self.fetch_all_query(query, (name,))
+    #     return all_products
 
-
-
-
+    #
+    #
+    # def fuzzy_search(self,name):
+    #     conn = sqlite3.connect('data.db')
+    #     cursor = conn.cursor()
+    #     query = f"SELECT * FROM product_table WHERE product LIKE '%{name}%'"
+    #     cursor.execute(query)
+    #     all_products = cursor.fetchall()
+    #     return all_products
 
 
 
