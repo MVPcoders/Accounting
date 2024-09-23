@@ -61,7 +61,7 @@ if selected == 'مدیریت':
                     "قیمت فروش",
                     help= 'قیمت به ریال'
                 ),
-                "unit": st.column_config.NumberColumn(
+                "unit": st.column_config.TextColumn(
                     "واحد",
                     width=10,
                 ),
@@ -85,11 +85,11 @@ if selected == 'مدیریت':
                 brand = st.text_input("برند")
                 buy_price = st.text_input("قیمت خرید")
                 sell_price = st.text_input("قیمت فروش")
-                unit = st.number_input("واحد", value=0)
-                per_unit = st.number_input("مقدار هر واحد", value=0)
+                unit = st.text_input("واحد", value=0)
+                inventory = st.number_input("موجودی", value=0)
                 # اضافه کردن کالا به دیتا بیس
                 if st.button("ثبت"):
-                    pro.add_product(product, brand, buy_price, sell_price, unit, per_unit)
+                    pro.add_product(product, brand, buy_price, sell_price, unit, inventory)
                     st.success("کالا با موفقیت اضافه شد")
                     #قطع ارتباط با دیتا بیس
                     pro.close_query()

@@ -57,16 +57,16 @@ class Products(DataBase):
                 brand TEXT NOT NULL,
                 buy_price  TEXT NOT NULL,
                 sell_price TEXT NOT NULL,
-                unit INTEGER NOT NULL,
+                unit TEXT NOT NULL,
                 inventory FLOAT NOT NULL
                 );
                 """
         self.execute_query(query,params=None)
 
 
-    def add_product(self, product, brand, buy_price, sell_price, unit, per_unit):
+    def add_product(self, product, brand, buy_price, sell_price, unit, inventory):
         query = "INSERT INTO product_table (product, brand,  buy_price,  sell_price, unit, inventory) VALUES (?, ?, ?, ?, ?, ?);"
-        self.execute_query(query, (product, brand, buy_price, sell_price, unit, unit*per_unit))
+        self.execute_query(query, (product, brand, buy_price, sell_price, unit, inventory))
 
 
     def update_product(self,  id, product, brand, buy_price, sell_price, unit, inventory):
