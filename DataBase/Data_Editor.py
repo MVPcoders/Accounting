@@ -57,20 +57,21 @@ class Products(DataBase):
                 brand TEXT NOT NULL,
                 buy_price  TEXT NOT NULL,
                 sell_price TEXT NOT NULL,
-                inventory INTEGER NOT NULL
+                unit INTEGER NOT NULL,
+                inventory FLOAT NOT NULL
                 );
                 """
         self.execute_query(query,params=None)
 
 
-    def add_product(self, product, brand, buy_price, sell_price, inventory):
-        query = "INSERT INTO product_table (product, brand,  buy_price,  sell_price, inventory) VALUES (?, ?, ?, ?, ?);"
-        self.execute_query(query, (product, brand, buy_price, sell_price, inventory))
+    def add_product(self, product, brand, buy_price, sell_price, unit, per_unit):
+        query = "INSERT INTO product_table (product, brand,  buy_price,  sell_price, unit, inventory) VALUES (?, ?, ?, ?, ?, ?);"
+        self.execute_query(query, (product, brand, buy_price, sell_price, unit, unit*per_unit))
 
 
-    def update_product(self,  id, product, brand, buy_price, sell_price, inventory):
-        query = "UPDATE product_table SET product=? , brand=?, buy_price=?, sell_price=?, inventory=? WHERE id=?"
-        self.execute_query(query, (product, brand, buy_price, sell_price, inventory, id))
+    def update_product(self,  id, product, brand, buy_price, sell_price, unit, inventory):
+        query = "UPDATE product_table SET product=? , brand=?, buy_price=?, sell_price=?, unit=?, inventory=?  WHERE id=?"
+        self.execute_query(query, (product, brand, buy_price, sell_price, unit, inventory, id))
 
 
     def delete_product(self, id):
