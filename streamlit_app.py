@@ -3,7 +3,7 @@ import json
 from numpy.ma.core import filled
 from streamlit import sidebar
 from streamlit_option_menu import option_menu
-from DataBase.Data_Editor import Products
+from DataBase.Data_Editor import Products, Factor
 import DataBase.json_editor as json_editor
 import streamlit as st
 import pandas as pd
@@ -45,7 +45,7 @@ if selected == 'مدیریت':
         editor, table = st.columns(2)
         with table:
             df = pd.DataFrame(all, columns=[desc[0] for desc in pro.cursor.description])
-            st.dataframe(df, hide_index=True,use_container_width=True,column_config={
+            st.dataframe(df, hide_index=True,use_container_width=True,column_order=("inventory","unit", "sell_price", "buy_price", "brand", "product", "id"),column_config={
                 "id": st.column_config.NumberColumn(
                     'کد کالا',
                     width= 10,
@@ -161,6 +161,8 @@ if selected == 'مدیریت':
                     except:
                         st.error('چنین محصولی نداریم')
                         pro.close_query()
+
+
 if selected == 'فاکتور':
     factor_style = """
     <style>
@@ -171,26 +173,30 @@ if selected == 'فاکتور':
     """
     st.markdown(factor_style, unsafe_allow_html=True)
     st.title('فاکتور دهی')
-    df = pd.DataFrame(all, columns=[desc[0] for desc in pro.cursor.description])
-    st.dataframe(df,width=1000,hide_index=True,column_order=("inventory","sell_price","buy_price","unit","brand","product"),column_config={
+    factor = Factor("Data.db")
+    factor_table = factor.factor_columns()
+    factor.close_query()
+    df = pd.DataFrame(factor_table, columns=[desc[0] for desc in factor.cursor.description])
+    st.dataframe(df,width=1000,hide_index=True,column_order=("inventory","sell_price","brand","product"),column_config={
         "product":st.column_config.TextColumn("محصول"),
         "brand":st.column_config.TextColumn("برند"),
-        "unit":st.column_config.TextColumn("واحد"),
-        "buy_price":st.column_config.NumberColumn("قیمت خرید"),
         "sell_price":st.column_config.NumberColumn("قیمت فروش"),
         "inventory":st.column_config.NumberColumn("موجود در انبار"),
     })
     # json_editor.add_item("a",12,"unn",5)
+
     name = st.text_input("نام کالا")
     if name:
-        pro = Products("Data.db")
-        product_info = pro.fuzzy_search(name)
+        factor = Factor("Data.db")
+        product_info = factor.fuzzy_search(name)
+        factor.close_query()
         st.write(" کالای پیدا شده : "+product_info[0][1])
+        st.write("برند کالا : "+product_info[0][2])
         st.write(" قیمت فروش : "+product_info[0][4])
         st.write(" تعداد در انبار : "+str(product_info[0][6]))
         quantity = st.number_input("تعداد فروش", value=int(product_info[0][6]),step=1)
         if st.button('add'):
-            json_editor.add_item(product_info[0][1], (int(product_info[0][4])*quantity), product_info[0][5], quantity)
+            json_editor.add_item(product_info[0][1],product_info[0][2],int(product_info[0][4])*quantity, quantity)
     json_editor.show_item()
     if st.button('reset'):
         json_editor.reset_factor()
