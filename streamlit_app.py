@@ -86,8 +86,8 @@ if selected == 'مدیریت':
                 st.title("کالای جدید")
                 product = st.text_input("نام کالا", key="add_product")
                 brand = st.text_input("برند")
-                buy_price = st.text_input("قیمت خرید")
-                sell_price = st.text_input("قیمت فروش")
+                buy_price = st.number_input("قیمت خرید",step=1)
+                sell_price = int(buy_price * 1.15)
                 unit = st.text_input("واحد")
                 inventory = st.number_input("موجودی", value=0)
                 # اضافه کردن کالا به دیتا بیس
@@ -162,9 +162,24 @@ if selected == 'مدیریت':
                         st.error('چنین محصولی نداریم')
                         pro.close_query()
 if selected == 'فاکتور':
+    factor_style = """
+    <style>
+    [data-testid="element-container"]{
+        text-align: center;
+    }
+    </style>
+    """
+    st.markdown(factor_style, unsafe_allow_html=True)
     st.title('فاکتور دهی')
     df = pd.DataFrame(all, columns=[desc[0] for desc in pro.cursor.description])
-    st.table(df)
+    st.dataframe(df,width=1000,hide_index=True,column_order=("inventory","sell_price","buy_price","unit","brand","product"),column_config={
+        "product":st.column_config.TextColumn("محصول"),
+        "brand":st.column_config.TextColumn("برند"),
+        "unit":st.column_config.TextColumn("واحد"),
+        "buy_price":st.column_config.NumberColumn("قیمت خرید"),
+        "sell_price":st.column_config.NumberColumn("قیمت فروش"),
+        "inventory":st.column_config.NumberColumn("موجود در انبار"),
+    })
     # json_editor.add_item("a",12,"unn",5)
     name = st.text_input("نام کالا")
     if name:
