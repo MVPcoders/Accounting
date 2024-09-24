@@ -103,18 +103,23 @@ class Products(DataBase):
 
     #
     #
-    # def fuzzy_search(self,name):
-    #     conn = sqlite3.connect('data.db')
-    #     cursor = conn.cursor()
-    #     query = f"SELECT * FROM product_table WHERE product LIKE '%{name}%'"
-    #     cursor.execute(query)
-    #     all_products = cursor.fetchall()
-    #     return all_products
+    def fuzzy_search(self,name):
+        conn = sqlite3.connect('data.db')
+        cursor = conn.cursor()
+        query = f"SELECT * FROM product_table WHERE product LIKE '%{name}%'"
+        cursor.execute(query)
+        all_products = cursor.fetchall()
+        return all_products
 
 
+def json_creator():
+    productinfo = {
+                    "name": None,
+                    "price": None,
+                    "unit": None,
+                    "quantity": None,
+                    "all_price": None,
+    }
 
-# pro = Products('Data.db')
-#
-#
-#
-# pro.close_query()
+    with open("product_info.json", "w") as f:
+        json.dump(productinfo, f)
