@@ -7,9 +7,11 @@ from DataBase.Data_Editor import Products, Factor
 import DataBase.json_editor as json_editor
 import streamlit as st
 import pandas as pd
+from fpdf import FPDF
+import pdfkit
 import random
 password = "1234"
-#فراخوانی دیتا بیس  و داده های جدول
+#فراخوانی دیتا بیس  و داده های جدولmain
 pro = Products("Data.db")
 all = pro.get_all_products()
 pro.close_query()
@@ -73,6 +75,39 @@ if selected == 'مدیریت':
                     width= 10,
                 )
             })
+
+
+            #####استخراج به صورت پی دی اف#####
+            pro = Products("Data.db")
+
+            #### فانکشنی که پی دی اف رو تولید می کنه ###
+            def generate_pdf(df):
+                html = df.to_html(index=False)
+                options = {
+                    'page-size': 'A4',
+                    'margin-top': '0.75in',
+                    'margin-right': '0.75in',
+                    'margin-bottom': '0.75in',
+                    'margin-left': '0.75in',
+                    'encoding': "UTF-8",
+                    'no-outline': None
+                }
+                pdf_bytes = pdfkit.from_string(html, False, options=options)
+                return pdf_bytes
+
+            ### داده ها از جدول گرفته میشه#
+            def get_table_data():
+                data = pro.get_all_products()
+                columns = [descripton[0] for descripton in pro.cursor.description]
+                df = pd.DataFrame(data, columns=columns)
+                df.columns = ["کد کالا","نام کالا","برند","قیمت خرید","قیمت فروش","واحد","موجودی"]
+                return df
+            #خروجی به صورت پی دی اف تولید میشه
+            df = get_table_data()
+            pdf_bytes = generate_pdf(df)
+            st.download_button("پی دی اف", pdf_bytes, file_name="product_table.pdf", mime='application/pdf')
+
+        #######
         with editor:
             crud = option_menu(
                 menu_title=None,
